@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <article>
+	        <div id="contents">
+	            <div class="login_container">
+	                <section>
+	                    <h3><span class="font_weight"><spring:message code="project.join.title"/></span></h3>
+	                </section>
+	
+	                <section class="join_section">
+	                	<form id="joinForm" action="joinProcess" method="post">	                  
+	                    <table id="register_table">
+	                        <tr>
+	                            <th>상품분류</th>
+	                            <td>
+                                    <select name="">
+                                        <option value="1">원두</option>
+                                        <option value="2">텀블러</option>
+                                    </select>
+                                </td>
+	                        </tr>
+	                        <tr>
+	                            <th>상품명</th>
+	                            <td><input name="id" id="id" class="input"/></td>
+	                        </tr>
+	                        <tr>
+	                            <th>영문상품명</th>
+	                            <td><input type="password" name="pwd" id="pwd" class="input"/></td>
+	                        </tr>
+	                        <tr>
+	                            <th>이미지</th>
+	                            <td><input type="file" name="uploadfile" size="25"  /></td>
+	                        </tr>
+	                        <tr>
+	                            <th>원산지</th>
+	                            <td><input type="text">  </td>
+	                        </tr>
+	                        <tr>
+	                            <th>가격</th>
+	                            <td><input type="text"></td>
+	                        </tr>
+	                        <tr>
+	                            <th>무게</th>
+	                            <td><input type="text"></td>
+	                        </tr>
+	                        <tr>
+	                            <th>설명1</th>
+	                            <td><textarea name="desc1"></textarea></td>
+                            </tr>
+                            <tr>
+                                <th>설명2</th>
+                                <td><textarea name="desc2"></textarea></td>
+                            </tr>
+	                        
+	                    </table>
+	                    <div class="join_section_btn"><br><input type="button" id="join_btn" value="등록"> <input type="reset"  class="total_btn" value="취소"></div>
+	                    </form>
+	                </section>
+	                <div class="mid_line"></div>
+	            </div>
+	        </div>
+	    </article>	             
+    </div>    
+</body>
+</html>

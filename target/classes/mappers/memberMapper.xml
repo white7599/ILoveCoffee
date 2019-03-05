@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- DTD 선언 -->
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="MemberMapper">
+	<insert id="insertMember">
+		INSERT INTO member (id, name, pwd, post_no, addr1, addr2, tel1, tel2, tel3, 
+		cellphone1, cellphone2, cellphone3, sms_check, email, newsletter_check, reg_date)
+		VALUES (#{id}, #{name}, #{pwd}, #{post_no}, #{addr1}, #{addr2}, #{tel1}, #{tel2}, #{tel3}, 
+		#{cellphone1}, #{cellphone2}, #{cellphone3}, #{sms_check}, #{email}, #{newsletter_check}, now());
+	</insert>
+	
+	<select id="viewMember" resultType="MemberVO">
+		SELECT 	* 
+		FROM	member
+		WHERE id=#{id}
+	</select>
+	
+	<update id="updateMember">
+		UPDATE member 
+		SET name=#{name}, pwd=#{pwd}, post_no = #{post_no} 
+			, addr1=#{addr1}, addr2=#{addr2}, tel1=#{tel1}, tel2=#{tel2}
+			, tel3=#{tel3}, cellphone1=#{cellphone1}, cellphone2=#{cellphone2}, cellphone3=#{cellphone3}
+			, sms_check=#{sms_check}, email = #{email}, newsletter_check=#{newsletter_check} 
+		WHERE id = #{id}
+	</update>
+	
+	<delete id="deleteMember">
+		DELETE FROM member WHERE id = #{id}
+	</delete>
+	
+			
+	<sql id="searchCondition">
+		<!-- 검색 조건이 null이 아니라면 검색조건에 따른 데이터 조회-->
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">
+				and name like '%${keyword}%'
+			</if>
+			<if test="searchType == 'c'.toString()">
+				and id like '%${keyword}%'
+			</if>
+			<if test="searchType == 'all'.toString()">
+				and (name like '%${keyword}%' or id like '%${keyword}%')
+			</if>
+			
+		</if>
+	</sql>
+	
+	<!-- 일정 페이지씩 조회 -->
+	<select id="memberList" resultType="MemberVO">
+		SELECT 	* 
+		FROM	member	
+		WHERE idx > 0
+		<include refid="searchCondition"></include>	
+		ORDER BY idx DESC, reg_date desc
+		limit #{pageStart}, #{perPageNum}
+	</select>
+	
+	<select id="getTotalCount" resultType="Integer">
+		SELECT count(id) FROM member
+		WHERE idx > 0
+		<include refid="searchCondition"></include>
+	</select>	
+	
+	
+	<select id="loginMember" resultType="MemberVO">
+		SELECT 	* 
+		FROM	member
+		WHERE id = #{id} and pwd = #{pwd}
+	</select>
+	
+	<select id="idCheck" resultType="MemberVO">
+		SELECT 	* 
+		FROM	member
+		WHERE id = #{id}
+	</select>
+	
+	
+	<!--  관리자 테이블(admin) -->
+	<select id="selectAdmin" resultType="AdminVO" parameterType="map">
+		SELECT 	* 
+		FROM	admin
+		WHERE id=#{id} and pwd=#{pwd}
+	</select>
+	
+</mapper>

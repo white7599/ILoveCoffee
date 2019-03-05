@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- DTD 선언 -->
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="CartMapper">
+	<insert id="insertCart">
+		INSERT INTO cart (user_id, product_idx, count)
+		VALUES (#{user_id}, #{product_idx}, #{count});
+	</insert>
+	
+	<!-- 사용자가 주문하기 전에 카트의 수량 직접 수정할 경우(카트고유번호로 수량 직접 수정) -->
+	<update id="updateCartProductCount" parameterType="map">
+		UPDATE cart 
+		SET count=#{count}
+		WHERE idx=#{idx}
+	</update>
+		
+	<update id="updateCart">
+		UPDATE cart 
+		SET count=count+#{count}
+		WHERE product_idx=#{product_idx} and user_id=#{user_id}
+	</update>
+	
+	<delete id="deleteCart">
+		DELETE FROM cart WHERE idx = #{idx}
+	</delete>
+	
+	<delete id="deleteAllCart">
+		DELETE FROM cart WHERE user_id = #{user_id}
+	</delete>
+	
+	<select id="cartList" resultType="CartVO">
+		SELECT a.*, b.name as product_name, b.price, b.weight, b.image_file, (b.price * a.count) as sumPrice
+		FROM cart a, product b 
+		WHERE a.product_idx = b.idx and a.user_id=#{user_id} 
+		Order By a.idx Desc	
+	</select>	
+	
+	<select id="cartCnt" resultType="Integer">
+		SELECT COUNT(*) FROM cart
+		WHERE user_id=#{user_id}
+	</select>
+	
+	<select id="cartCntByProduct" resultType="Integer">
+		SELECT COUNT(*) FROM cart
+		WHERE user_id=#{user_id} and product_idx=#{product_idx}
+	</select>
+	
+	<select id="sumPriceTotal" resultType="int">
+		SELECT IFNULL(sum(b.price*a.count),0) as sumTotal
+		FROM cart a, product b
+		WHERE a.product_idx = b.idx and a.user_id=#{user_id}
+		
+	</select>
+	
+</mapper>

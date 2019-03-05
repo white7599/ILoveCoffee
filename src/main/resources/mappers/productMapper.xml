@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- DTD 선언 -->
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="ProductMapper">
+	<select id="selectProductListPerType" resultType="ProductVO">
+		SELECT a.idx, a.type_idx, b.type, a.name, a.eng_name, a.desc1, a.image_file, a.origin, a.desc2, a.price, a.weight, a.view_check, a.reg_date  
+		FROM product a JOIN product_type b 
+		ON a.type_idx = b.idx 
+		WHERE a.view_check='Y' and a.type_idx=#{type_idx}
+		ORDER BY a.idx DESC
+	</select>
+	
+	<insert id="insertProduct">
+		INSERT INTO product (type_idx, name, eng_name, desc1, image_file, origin, desc2, price, weight, reg_date)
+		VALUES (#{type_idx}, #{name}, #{eng_name}, #{desc1}, #{image_file}, #{origin}, #{desc2}, #{price}, #{weight}, now());
+	</insert>
+	
+	<select id="viewProduct" resultType="ProductVO">
+		SELECT 	a.idx, a.type_idx, a.name, a.eng_name, a.desc1, a.image_file, a.origin, a.desc2, a.price, a.price
+				, a.weight, a.view_check, a.reg_date, a.update_date, b.type
+		FROM	product a JOIN product_type b
+		ON	a.type_idx = b.idx
+		WHERE a.idx=#{idx}
+	</select>
+	
+	<update id="updateProduct">
+		UPDATE product 
+		SET type_idx=#{type_idx}, name=#{name}, eng_name = #{eng_name} 
+			, image_file=#{image_file}, origin=#{origin}, price=#{price}, weight=#{weight}
+			, view_check=#{view_check}, desc1 = #{desc1}, desc2=#{desc2}, update_date=#{update_date}
+		WHERE idx = #{idx}
+	</update>
+	
+	<delete id="deleteProduct">
+		DELETE FROM product WHERE idx = #{idx}
+	</delete>
+	
+	<select id="productList" resultType="ProductVO">
+		SELECT * FROM product Order By idx Desc	
+	</select>
+	
+	<select id="getMaxIdx" resultType="Integer">
+		SELECT MAX(idx) FROM product 
+	</select>
+	
+	<sql id="searchCondition">
+		<!-- 검색 조건이 null이 아니라면 검색조건에 따른 데이터 조회-->
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">
+				and name like '%${keyword}%'
+			</if>
+			<if test="searchType == 'c'.toString()">
+				and eng_name like '%${keyword}%'
+			</if>
+			<if test="searchType == 'all'.toString()">
+				and (name like '%${keyword}%' or eng_name like '%${keyword}%')
+			</if>
+			
+		</if>
+	</sql>
+	
+	<!-- 일정 페이지씩 조회 -->
+	<select id="productListPage" resultType="ProductVO">
+		SELECT 	a.idx, a.type_idx, a.name, a.eng_name, a.desc1, a.image_file, a.origin, a.desc2, a.price, a.price
+				, a.weight, a.view_check, a.reg_date, a.update_date, b.type
+		FROM	product a JOIN product_type b
+		ON	a.type_idx = b.idx
+		WHERE a.idx > 0
+		<include refid="searchCondition"></include>
+		ORDER BY a.idx DESC
+		limit #{pageStart}, #{perPageNum}
+	</select>
+	
+	<select id="gettotalcount" resultType="Integer">
+		SELECT count(idx) FROM product
+		WHERE idx > 0
+		<include refid="searchCondition"></include>
+	</select>	
+	
+	<select id="productTypeList" resultType="ProductTypeVO">
+		SELECT idx, type, view_check, reg_date
+		FROM product_type
+		WHERE idx > 0
+	</select>
+	
+	<insert id="insertProductType">
+		INSERT INTO product_type (type, view_check, reg_date)
+		VALUES (#{type}, #{view_check}, now())
+	</insert>
+	
+	<update id="updateProductType">
+		UPDATE product_type
+		SET	type=#{type}, view_check=#{view_check}
+		WHERE idx=#{idx}
+	</update>
+	
+	<delete id="deleteProductType">
+		DELETE FROM product_type
+		WHERE idx=#{idx}
+	</delete>
+	
+	<select id="viewProductType" resultType="ProductTypeVO">
+		SELECT * FROM product_type WHERE idx=#{idx}
+	</select>
+	
+	<select id="menuProductTypeList" resultType="ProductTypeVO">
+		SELECT idx, type, view_check, link_category, reg_date 
+		FROM product_type
+		WHERE view_check='Y'
+		order by idx Asc
+	</select>
+	
+	<select id="menuProductList" resultType="ProductVO">
+		SELECT 	a.idx, a.type_idx, a.name, a.eng_name, a.desc1, a.image_file, a.origin, a.desc2, a.price, a.price
+				, a.weight, a.view_check, a.reg_date, a.update_date, b.type
+		FROM	product a JOIN product_type b
+		ON	a.type_idx = b.idx
+		WHERE a.view_check='Y' and b.view_check='Y' and b.idx = #{idx}
+		Order by a.idx Desc
+	</select>
+	
+	
+</mapper>

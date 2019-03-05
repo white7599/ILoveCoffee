@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- <tiles-definitions>
+ 
+header / footer 를 사용하는
+<definition name="base_layout" template="/WEB-INF/viewtiles/template/layout.jsp" preparer = "menuPreparer">
+    <put-attribute name="header" value="/WEB-INF/views/header.jsp" />
+    <put-attribute name="footer" value="/WEB-INF/views/footer.jsp" />
+</definition>
+</tiles-definitions> -->

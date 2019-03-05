@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- DTD 선언 -->
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="DirectQuestionMapper">
+	<insert id="insertDirectQuestion">
+		INSERT INTO direct_question (type, email, cellphone, writer, contents, info_agree, reg_date)
+		VALUES (#{type}, #{email}, #{cellphone}, #{writer}, #{contents}, #{info_agree}, now());
+	</insert>
+	
+	<select id="viewDirectQuestion" resultType="DirectQuestionVO">
+		SELECT a.*, b.name 
+		FROM direct_question a, member b 
+		WHERE a.writer = b.id and a.idx=#{idx}
+	</select>
+		
+	<update id="updateDirectQuestion">
+		UPDATE direct_question 
+		SET answer_state='Y', answer = #{answer}, answer_date=now()
+		WHERE idx = #{idx}
+	</update>
+	
+	<delete id="deleteDirectQuestion">
+		DELETE FROM direct_question WHERE idx = #{idx}
+	</delete>
+	
+	<select id="directQuestionList" resultType="DirectQuestionVO">
+		SELECT a.*, b.name
+		FROM direct_question a, member b 
+		WHERE a.writer = b.id
+		Order By a.idx Desc	
+	</select>	
+	
+	<select id="myDirectQuestionList" resultType="DirectQuestionVO">
+		SELECT * 
+		FROM direct_question
+		WHERE writer=#{id}
+		Order By idx Desc
+	</select>
+	
+	
+	<!-- <select id="cartCnt" resultType="Integer">
+		SELECT COUNT(*) FROM cart
+		WHERE user_id=#{user_id}
+	</select>
+	
+	<select id="cartCntByProduct" resultType="Integer">
+		SELECT COUNT(*) FROM cart
+		WHERE user_id=#{user_id} and product_idx=#{product_idx}
+	</select>
+	
+	<select id="sumPriceTotal" resultType="int">
+		SELECT IFNULL(sum(b.price*a.count),0) as sumTotal
+		FROM cart a, product b
+		WHERE a.product_idx = b.idx and a.user_id=#{user_id}
+		
+	</select> -->
+	
+	
+</mapper>

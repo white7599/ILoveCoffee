@@ -1,0 +1,6 @@
+eclipse.preferences.version=1
+encoding//src/main/webapp/WEB-INF/messages/messages.properties=UTF-8
+encoding//src/main/webapp/WEB-INF/views/admin/productPaging.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/views/mypage.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/views/mypage_back.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/views/summernote.jsp=UTF-8

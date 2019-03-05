@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- DTD 선언 -->
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="OrderMapper">
+
+	<insert id="insertOrder" useGeneratedKeys="true" keyProperty="idx" parameterType="OrderVO">
+		INSERT INTO tbl_order (user_id, total_amt, payment_type, status, order_date)
+		VALUES (#{user_id}, #{total_amt}, #{payment_type}, 0, now());
+		
+		<selectKey keyProperty="idx" resultType="Integer">
+	        SELECT LAST_INSERT_ID()
+	   </selectKey>	
+	</insert>
+		
+	<update id="updateOrder">
+		UPDATE cart 
+		SET count=count+#{count}
+		WHERE product_idx=#{product_idx} and user_id=#{user_id}
+	</update>
+	
+	<delete id="deleteOrder">
+		DELETE FROM cart WHERE idx = #{idx}
+	</delete>	
+		
+	<select id="orderList" resultType="OrderVO" parameterType="map">
+		SELECT *, order_date+idx as order_idx
+		FROM tbl_order
+		
+		WHERE user_id=#{user_id} 
+			and DATE(order_date) BETWEEN #{from_date} AND #{to_date}
+		Order By idx Desc	
+	</select>	
+	
+	<select id="orderCnt" resultType="Integer">
+		SELECT COUNT(*) FROM cart
+		WHERE user_id=#{user_id}
+	</select>
+	
+	
+	<insert id="insertOrderDelivery" parameterType="OrderDeliveryVO">
+		insert into order_delivery (order_idx, payee_id, payee_name, post_no, addr1, addr2, tel1, tel2, tel3, cellphone1, cellphone2, cellphone3, message)
+		values (#{order_idx}, #{payee_id}, #{payee_name}, #{post_no}, #{addr1}, #{addr2}, #{tel1}, #{tel2}, #{tel3}, #{cellphone1}, #{cellphone2}, #{cellphone3}, #{message})
+	</insert>
+	
+	<insert id="insertOrderDetail" parameterType="java.util.List">
+		insert into order_detail(order_idx, product_idx, count)
+        values
+        <foreach collection="list" item="item" separator=" , ">
+            (#{item.order_idx}, #{item.product_idx}, #{item.count})
+        </foreach>
+	</insert>
+	
+	<select id="orderDetailListByOrder" resultType="OrderDetailVO">
+		SELECT a.idx, a.order_idx, a.product_idx, a.count, b.name as product_name, b.price as product_price, b.image_file
+		FROM	order_detail a, product b 
+		WHERE  a.product_idx = b.idx AND a.order_idx=#{order_idx}
+		ORDER BY a.idx DESC
+	</select>
+	
+	
+	
+	<!-- 관리자단 -->
+	<sql id="searchCondition">
+		<!-- 검색 조건이 null이 아니라면 검색조건에 따른 데이터 조회-->
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()"> <!-- 주문번호 -->
+				and order_idx like '%${keyword}%'
+			</if>
+			<if test="searchType == 'c'.toString()"> <!-- 주문자 아이디 -->
+				and user_id like '%${keyword}%'
+			</if>
+			<if test="searchType == 'all'.toString()"> 
+				and DATE(order_date) between #{searchStartDate} and #{searchEndDate}
+			</if>			
+		</if>		
+	</sql>
+	
+	<select id="searchOrderList" resultType="OrderVO">
+		SELECT * 
+		FROM view_order
+		
+		WHERE 1=1  
+			<include refid="searchCondition"></include>
+		Order By idx Desc
+		limit #{pageStart}, #{perPageNum}	
+	</select>
+	
+	<select id="searchOrderListToExcel" resultType="OrderVO" fetchSize="100">
+		SELECT *
+		FROM view_order_excel
+		WHERE 1 = 1 	
+			<include refid="searchCondition"></include>
+		Order By idx Desc
+	</select>
+	
+	<select id="gettotalcount" resultType="Integer">
+		SELECT count(idx) FROM view_order 
+		WHERE 1=1 
+		<include refid="searchCondition"></include>
+	</select>
+	
+</mapper>

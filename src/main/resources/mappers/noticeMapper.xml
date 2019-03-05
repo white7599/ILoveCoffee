@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- DTD 선언 -->
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="NoticeMapper">
+	<insert id="insertNotice">
+		INSERT INTO notice (title, contents, reg_date)
+		VALUES (#{title}, #{contents}, now());
+	</insert>
+	
+	<select id="viewNotice" resultType="NoticeVO">
+		SELECT * FROM notice WHERE idx=#{idx}
+	</select>
+	
+	<select id="prevNotice" resultType="NoticeVO">
+		<![CDATA[
+			SELECT * FROM notice WHERE idx > #{idx} ORDER BY idx ASC LIMIT 1	
+		]]>
+	</select>
+	
+	<select id="nextNotice" resultType="NoticeVO">	
+		<![CDATA[		
+			SELECT * FROM notice WHERE idx < #{idx} ORDER BY idx DESC LIMIT 1
+		]]>
+	</select>
+		
+	<update id="updateNotice">
+		UPDATE notice 
+		SET title=#{title}, contents = #{contents}
+		WHERE idx = #{idx}
+	</update>
+	
+	<delete id="deleteNotice">
+		DELETE FROM notice WHERE idx = #{idx}
+	</delete>
+	
+	<select id="noticeList" resultType="NoticeVO">
+		SELECT * FROM notice Order By idx Desc	
+	</select>
+	
+	<select id="getMaxIdx" resultType="Integer">
+		SELECT MAX(idx) FROM notice 
+	</select>
+	
+	<sql id="searchCondition">
+		<!-- 검색 조건이 null이 아니라면 검색조건에 따른 데이터 조회-->
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">
+				and title like '%${keyword}%'
+			</if>
+			<if test="searchType == 'c'.toString()">
+				and contents like '%${keyword}%'
+			</if>
+			
+			<if test="searchType == 'tc'.toString()">
+				and (title like '%${keyword}%'
+					or contents like '%${keyword}%')
+			</if>
+			<if test="searchType == 'all'.toString()">
+				and (title like '%${keyword}%'
+					or contents like '%${keyword}%')
+			</if>
+		</if>
+	</sql>
+	
+	<!-- 일정 페이지씩 조회 -->
+	<select id="listPage" resultType="NoticeVO">
+		SELECT * FROM notice
+		WHERE idx > 0
+		<include refid="searchCondition"></include>
+		order by idx desc, reg_date desc
+		limit #{pageStart}, #{perPageNum}
+	</select>
+	
+	<select id="gettotalcount" resultType="Integer">
+		SELECT count(idx) FROM notice
+		WHERE idx > 0
+		<include refid="searchCondition"></include>
+		
+		
+	</select>
+	
+	
+	<!-- FAQ 관련 -->
+	<select id="faqList" resultType="FaqVO">
+		SELECT * FROM faq Order By idx Desc	
+	</select>
+	
+	<select id="faq" resultType="FaqVO">
+		SELECT * FROM faq WHERE idx=#{idx}
+	</select>
+	
+	<insert id="faqInsert">
+		INSERT INTO faq(question, answer, reg_date) VALUES (#{question}, #{answer}, now())
+	</insert>
+	
+	<update id="faqUpdate">
+		UPDATE faq SET question=#{question}, answer=#{answer} WHERE idx=#{idx}
+	</update>
+		
+	<delete id="faqDelete">
+		DELETE FROM faq WHERE idx=#{idx}
+	</delete>
+	
+	
+	
+	
+	
+</mapper>
